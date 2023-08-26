@@ -1,7 +1,13 @@
 const { Server } = require("socket.io");
 let io;
 
-const whitelist = ["http://localhost:3000", "http://localhost:5173"];
+const whitelist = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://server-boutique-tau.vercel.app",
+    "https://client-boutique.vercel.app",
+    "https://admin-boutique.vercel.app",
+];
 const corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {

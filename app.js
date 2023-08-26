@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const https = require("https");
+const http = require("http");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -44,6 +45,9 @@ let whitelist = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5000",
+    "https://server-boutique-tau.vercel.app",
+    "https://client-boutique.vercel.app",
+    "https://admin-boutique.vercel.app",
 ];
 let corsOptions = {
     origin: function (origin, callback) {
@@ -127,20 +131,26 @@ app.use((error, req, res, next) => {
 // MongoDB Configuration ---------------------------
 const port = process.env.PORT || 5000;
 const directory = path.join(process.cwd());
-const privateKey = fs.readFileSync(directory + "/server.key", "utf8");
-const certificate = fs.readFileSync(directory + "/server.cert", "utf8");
+const privateKey = fs.readFileSync(directory + "/key.pem");
+const certificate = fs.readFileSync(directory + "/cert.pem");
 
 mongoose
     .connect(uri)
     .then((x) => {
-        const server = app.listen(port, () => {
-            console.log("Connected to port " + port);
-        });
+        // const server = app.listen(port, () => {
+        //     console.log("Connected to port " + port);
+        // });
+        // TODO Error connecting to mongo bad decrypt key and cert
+        // TODO Error connecting to mongo no start line
         // const server = https
         //     .createServer({ key: privateKey, cert: certificate }, app)
         //     .listen(port, () => {
         //         console.log("Connected to port " + port);
         //     });
+
+        const server = https.createServer(app).listen(port, () => {
+            console.log("Connected to port " + port);
+        });
 
         const io = require("./socket").init(server);
         io.on("connection", (socket) => {
