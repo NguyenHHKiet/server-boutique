@@ -135,11 +135,11 @@ mongoose
         // const server = app.listen(port, () => {
         //     console.log("Connected to port " + port);
         // });
-        const server = https
-            .createServer({ key: privateKey, cert: certificate }, app)
-            .listen(port, () => {
-                console.log("Connected to port " + port);
-            });
+        const server = https.createServer(
+            { key: privateKey, cert: certificate },
+            app
+        );
+
         const io = require("./socket").init(server);
         io.on("connection", (socket) => {
             console.log(`User Connected: ${socket.id}`);
@@ -158,6 +158,9 @@ mongoose
             socket.on("disconnect", () => {
                 console.log("User Disconnected", socket.id);
             });
+        });
+        server.listen(port, () => {
+            console.log("Connected to port " + port);
         });
         console.log(
             `Connected to Mongo! Database name: "${x.connections[0].name}"`
