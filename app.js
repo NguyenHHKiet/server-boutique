@@ -133,14 +133,14 @@ const certificate = fs.readFileSync(directory + "/server.cert", "utf8");
 mongoose
     .connect(uri)
     .then((x) => {
-        // const server = app.listen(port, () => {
-        //     console.log("Connected to port " + port);
-        // });
-        const server = https
-            .createServer({ key: privateKey, cert: certificate }, app)
-            .listen(port, () => {
-                console.log("Connected to port " + port);
-            });
+        const server = app.listen(port, () => {
+            console.log("Connected to port " + port);
+        });
+        // const server = https
+        //     .createServer({ key: privateKey, cert: certificate }, app)
+        //     .listen(port, () => {
+        //         console.log("Connected to port " + port);
+        //     });
 
         const io = require("./socket").init(server);
         io.on("connection", (socket) => {
