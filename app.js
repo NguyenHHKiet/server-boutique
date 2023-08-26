@@ -179,3 +179,5 @@ mongoose
     .catch((err) => {
         console.error("Error connecting to mongo", err.reason);
     });
+
+module.exports = app;
