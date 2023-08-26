@@ -149,9 +149,7 @@ mongoose
         //         console.log("Connected to port " + port);
         //     });
 
-        const server = https.createServer(app).listen(port, () => {
-            console.log("Connected to port " + port);
-        });
+        const server = https.createServer(app);
 
         const io = require("./socket").init(server);
         io.on("connection", (socket) => {
@@ -171,6 +169,9 @@ mongoose
             socket.on("disconnect", () => {
                 console.log("User Disconnected", socket.id);
             });
+        });
+        server.listen(port, () => {
+            console.log("Connected to port " + port);
         });
 
         console.log(
