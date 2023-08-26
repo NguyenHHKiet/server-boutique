@@ -23,10 +23,10 @@ const User = require("./models/User");
 //     await run();
 // })();
 
-const accessLogStream = fs.createWriteStream(
-    path.join(__dirname, "access.log"),
-    { flags: "a" }
-);
+// const accessLogStream = fs.createWriteStream(
+//     path.join(__dirname, "access.log"),
+//     { flags: "a" }
+// );
 
 const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.yq5iral.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}`;
 const store = new MongooseDBStore({
@@ -76,7 +76,8 @@ app.use(
 app.use(csrfProtection);
 app.use(helmet());
 app.use(compression());
-app.use(morgan("combined", { stream: accessLogStream }));
+app.use(morgan("combined"));
+// app.use(morgan("combined", { stream: accessLogStream }));
 
 // routes configuration ---------------------------
 app.use((req, res, next) => {
@@ -131,14 +132,14 @@ const certificate = fs.readFileSync("server.cert");
 mongoose
     .connect(uri)
     .then((x) => {
-        const server = app.listen(port, () => {
-            console.log("Connected to port " + port);
-        });
-        // const server = https
-        //     .createServer({ key: privateKey, cert: certificate }, app)
-        //     .listen(port, () => {
-        //         console.log("Connected to port " + port);
-        //     });
+        // const server = app.listen(port, () => {
+        //     console.log("Connected to port " + port);
+        // });
+        const server = https
+            .createServer({ key: privateKey, cert: certificate }, app)
+            .listen(port, () => {
+                console.log("Connected to port " + port);
+            });
         const io = require("./socket").init(server);
         io.on("connection", (socket) => {
             console.log(`User Connected: ${socket.id}`);
