@@ -127,8 +127,8 @@ app.use((error, req, res, next) => {
 // MongoDB Configuration ---------------------------
 const port = process.env.PORT || 5000;
 const directory = path.join(process.cwd());
-const privateKey = fs.readFileSync(directory + "/server.key");
-const certificate = fs.readFileSync(directory + "/server.cert");
+const privateKey = fs.readFileSync(directory + "/server.key", "utf8");
+const certificate = fs.readFileSync(directory + "/server.cert", "utf8");
 
 mongoose
     .connect(uri)
