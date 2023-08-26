@@ -45,9 +45,9 @@ let whitelist = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5000",
-    "https://server-boutique-tau.vercel.app",
-    "https://client-boutique.vercel.app",
-    "https://admin-boutique.vercel.app",
+    "https://server-boutique-tau.vercel.app/",
+    "https://client-boutique.vercel.app/",
+    "https://admin-boutique.vercel.app/",
 ];
 let corsOptions = {
     origin: function (origin, callback) {

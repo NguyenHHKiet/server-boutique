@@ -4,16 +4,16 @@ let io;
 const whitelist = [
     "http://localhost:3000",
     "http://localhost:5173",
-    "https://server-boutique-tau.vercel.app",
-    "https://client-boutique.vercel.app",
-    "https://admin-boutique.vercel.app",
+    "https://server-boutique-tau.vercel.app/",
+    "https://client-boutique.vercel.app/",
+    "https://admin-boutique.vercel.app/",
 ];
 const corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
-            callback(new Error("Not allowed by CORS"));
+            callback(new Error("Not allowed by CORS SOCKET.IO"));
         }
     },
     methods: ["GET", "POST"],
