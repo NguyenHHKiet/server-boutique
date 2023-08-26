@@ -41,23 +41,24 @@ store.on("error", (error) => {
 // middleware configuration ---------------------------
 const app = express();
 const csrfProtection = csrf();
+
 let whitelist = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5000",
-    "https://server-boutique-tau.vercel.app/",
-    "https://client-boutique.vercel.app/",
-    "https://admin-boutique.vercel.app/",
+    "https://server-boutique-tau.vercel.app",
+    "https://client-boutique.vercel.app",
+    "https://admin-boutique.vercel.app",
 ];
-let corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true,
+// Configuring CORS Asynchronously
+const corsOptions = function (req, callback) {
+    let corsOptions;
+    if (whitelist.indexOf(req.header("Origin")) !== -1) {
+        corsOptions = { origin: true, credentials: true }; // reflect (enable) the requested origin in the CORS response
+    } else {
+        corsOptions = { origin: false }; // disable CORS for this request
+    }
+    callback(null, corsOptions); // callback expects two parameters: error and options
 };
 
 app.use(bodyParser.json());
