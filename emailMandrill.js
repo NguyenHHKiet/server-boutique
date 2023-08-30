@@ -9,7 +9,7 @@ var mandrillTransport = require("nodemailer-mandrill-transport");
 var smtpTransport = nodemailer.createTransport(
     mandrillTransport({
         auth: {
-            apiKey: "md-4wJ8K7zLdIOrccFZtTkt6w",
+            apiKey: "",
         },
     })
 );

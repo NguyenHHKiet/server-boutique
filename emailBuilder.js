@@ -2,8 +2,7 @@ const SibApiV3Sdk = require("sib-api-v3-sdk");
 let defaultClient = SibApiV3Sdk.ApiClient.instance;
 
 let apiKey = defaultClient.authentications["api-key"];
-apiKey.apiKey =
-    "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";
+apiKey.apiKey = "";
 
 let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 

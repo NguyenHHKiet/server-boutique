@@ -1,6 +1,6 @@
 var Mailchimp = require("mailchimp-api-v3");
 
-var mailchimp = new Mailchimp("2648f4345d5943bbadd422b7dca04ddd-us21");
+var mailchimp = new Mailchimp("");
 
 //Promise style
 mailchimp
@@ -16,12 +16,12 @@ mailchimp
 
 // const mailchimp = require("@mailchimp/mailchimp_marketing");
 // mailchimp.setConfig({
-//     apiKey: "2648f4345d5943bbadd422b7dca04ddd-us21",
+//     apiKey: "",
 //     server: "us21",
 // });
 
 // // const mailchimp = require("@mailchimp/mailchimp_transactional")(
-// //     "2648f4345d5943bbadd422b7dca04ddd-us21"
+// //     ""
 // // );
 
 // // const message = {
@@ -46,7 +46,7 @@ mailchimp
 // // module.exports = run;
 
 // const mailchimpClient = require("@mailchimp/mailchimp_transactional")(
-//     "2648f4345d5943bbadd422b7dca04ddd-us21"
+//     ""
 // );
 
 // const run = async () => {
