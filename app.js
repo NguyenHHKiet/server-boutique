@@ -143,11 +143,10 @@ mongoose
         // });
         // TODO Error connecting to mongo bad decrypt key and cert
         // TODO Error connecting to mongo no start line
-        // const server = https
-        //     .createServer({ key: privateKey, cert: certificate }, app)
-        //     .listen(port, () => {
-        //         console.log("Connected to port " + port);
-        //     });
+        // const server = https.createServer(
+        //     { key: privateKey, cert: certificate },
+        //     app
+        // );
 
         const server = https.createServer(app);
 
