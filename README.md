@@ -1,4 +1,4 @@
-# REST API SERVER BOUTIQUE
+# REST API SERVER BOUTIQUE [Under Construction Updating]
 
 ## Introduction
 
@@ -13,6 +13,19 @@ updating, and deleting resources. Our system also can handle errors flexibly, wi
 -   Socket.io
 -   Multer
 -   Vercel
+
+### Description
+
+Project Overview:
+
+-   User authentication
+-   Display data on Home Page
+-   Users can create orders
+-   There is an email sent to the user when creating an order
+-   Create Admin page to manage data
+-   There is a mechanism to upload photos to the Server
+-   Livechat function between customers and consultants
+-   Deploy the product
 
 ## REST API
 

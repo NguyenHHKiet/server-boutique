@@ -65,7 +65,7 @@ app.use(bodyParser.json());
 app.use(
     bodyParser.urlencoded({
         extended: false,
-    })
+    }),
 );
 app.use(cors(corsOptions));
 app.use("/public", express.static("public"));
@@ -75,7 +75,7 @@ app.use(
         resave: false,
         saveUninitialized: false,
         store: store,
-    })
+    }),
 );
 
 app.use(csrfProtection);
@@ -109,10 +109,10 @@ app.use((req, res, next) => {
 //     next();
 // });
 
-app.use("/api", shopRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/message", messageRoutes);
+app.use("/api/v2/products", shopRoutes);
+app.use("/api/v2/auth", authRoutes);
+app.use("/api/v2/admin", adminRoutes);
+app.use("/api/v2/message", messageRoutes);
 
 // next handler error if something goes wrong ---------------------------
 app.use((req, res, next) => {
@@ -157,7 +157,7 @@ mongoose
             socket.on("join_room", (data) => {
                 socket.join(data);
                 console.log(
-                    `User with ID: ${socket.id} joined session: ${data}`
+                    `User with ID: ${socket.id} joined session: ${data}`,
                 );
             });
 
@@ -174,7 +174,7 @@ mongoose
         });
 
         console.log(
-            `Connected to Mongo! Database name: "${x.connections[0].name}"`
+            `Connected to Mongo! Database name: "${x.connections[0].name}"`,
         );
     })
     .catch((err) => {
