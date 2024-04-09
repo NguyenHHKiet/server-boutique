@@ -1,7 +1,7 @@
 let multer = require("multer"),
     uuidv4 = require("uuid/v4");
 
-const DIR = "./public/";
+const DIR = process.env.FILE_UPLOAD_PATH;
 // const multerStorage = multer.memoryStorage();
 
 const storage = multer.diskStorage({

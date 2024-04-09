@@ -1,75 +1,46 @@
 const Product = require("../models/Product");
 const Order = require("../models/Order");
 const User = require("../models/User");
+const asyncHandler = require("../middleware/asyncHandler");
 
-exports.getAdminProducts = (req, res, next) => {
-    Product.find({ userId: req.userId, available: true })
-        .then((results) => {
-            res.status(200).json(results);
-        })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
-};
+exports.getProducts = asyncHandler(async (req, res, next) => {
+    const results = await Product.find({ userId: req.userId });
+    res.status(200).json({ success: true, data: results });
+});
 
-exports.getEditProduct = (req, res, next) => {
-    const productId = req.params.productId;
-    Product.findById(productId)
-        .then((results) => {
-            res.status(200).json(results);
-        })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
-};
+exports.getProduct = asyncHandler(async (req, res, next) => {
+    const results = await Product.findById(req.params.productId);
+    res.status(200).json({ success: true, data: results });
+});
 
-exports.postProduct = (req, res, next) => {
+exports.createProduct = async (req, res, next) => {
     const files = req.files;
     const reqFiles = {};
 
     if (!files) {
-        const error = new Error("No image provided.");
-        error.statusCode = 422;
-        throw error;
+        return next(new ErrorResponse("No image provided.", 422));
     }
 
-    const url = req.protocol + "://" + req.get("host");
     for (var i = 0; i < files.length; i++) {
-        reqFiles[`img${i + 1}`] = url + "/public/" + req.files[i].filename;
+        reqFiles[`img${i + 1}`] = req.files[i].filename;
     }
 
-    const { name, category, price, shortDescription, longDescription } =
-        req.body;
+    const { shortDescription, longDescription } = req.body;
 
-    const product = new Product({
-        name,
-        category,
+    const product = await Product.create({
+        ...req.body,
         short_desc: shortDescription,
         long_desc: longDescription,
-        price,
         ...reqFiles,
-        userId: req.userId,
+        userId: req.user._id,
     });
 
-    product
-        .save()
-        .then((result) => {
-            res.status(201).json({
-                message: "Done upload!",
-                productCreated: {
-                    _id: result._id,
-                },
-            });
-        })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
+    const result = await product.save();
+
+    res.status(201).json({ success: true, data: result._id });
 };
 
-exports.postEditProduct = async (req, res, next) => {
+exports.updateProduct = async (req, res, next) => {
     const productId = req.params.productId;
     const productExists = await Product.findById(productId);
     /*
@@ -88,25 +59,12 @@ exports.postEditProduct = async (req, res, next) => {
 
 exports.deleteProduct = async (req, res, next) => {
     const productId = req.params.productId;
-    console.log("DESTROYED PRODUCT", productId);
-    // Product.findByIdAndRemove(productId)
-    //     .then(() => {
-    //         return res.status(202).json("DESTROYED PRODUCT");
-    //     })
-    //     .catch((err) => console.log(err));
-    const productExists = await Product.findById(productId);
-    if (!productExists) {
-        const error = new Error("Product is not exists");
-        if (!error.statusCode) error.statusCode = 400;
-        next(error);
-    }
-
-    // updatedHotel
-    await productExists.updateOne({ $set: { available: false } });
-    res.status(201).json({ message: "DESTROYED PRODUCT" });
+    Product.findByIdAndRemove(productId)
+        .then(() => res.status(202).json({ success: true, data: {} }))
+        .catch((err) => console.log(err));
 };
 
-exports.getAdminOrders = async (req, res, next) => {
+exports.getOrders = async (req, res, next) => {
     const qtyOrders = await Order.estimatedDocumentCount();
     const qtyUser = await User.estimatedDocumentCount();
 
@@ -117,7 +75,7 @@ exports.getAdminOrders = async (req, res, next) => {
         .then((orders) => {
             const earnings = orders.reduce(
                 (acc, order) => acc + order.totalAmount,
-                0
+                0,
             );
             res.status(200).json({ orders, qtyUser, qtyOrders, earnings });
         })

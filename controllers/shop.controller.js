@@ -1,40 +1,30 @@
-const fs = require("fs");
-const path = require("path");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
 const { validationResult } = require("express-validator");
-const nodemailer = require("nodemailer");
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: "nhoangkiet35@gmail.com",
-        pass: "",
-    },
+const asyncHandler = require("../middleware/asyncHandler");
+const ErrorResponse = require("../utils/errorResponse");
+
+// eslint-disable-next-line no-unused-vars
+exports.getProducts = asyncHandler(async (req, res, next) => {
+    const products = await Product.find();
+    res.status(200).json({ success: true, data: products });
 });
 
-exports.getProducts = (req, res, next) => {
-    Product.find()
-        .then((products) => {
-            res.status(200).json(products);
-        })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
-};
+exports.getProduct = asyncHandler(async (req, res, next) => {
+    const product = await Product.findById(req.params.productId);
 
-exports.getProduct = (req, res, next) => {
-    const prodId = req.params.productId;
-    Product.findById(prodId)
-        .then((product) => {
-            res.status(200).json(product);
-        })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
-};
+    if (!product) {
+        return next(
+            new ErrorResponse(
+                `Product not found with id of ${req.params.id}`,
+                404,
+            ),
+        );
+    }
+
+    res.status(200).json({ success: true, data: product });
+});
 
 exports.getCart = (req, res, next) => {
     req.user
@@ -122,7 +112,7 @@ exports.postOrder = (req, res, next) => {
                 // Tìm sản phẩm theo id và giảm số lượng đi 1
                 await Product.updateOne(
                     { _id: item.productId._id },
-                    { $inc: { count: -item.quantity } }
+                    { $inc: { count: -item.quantity } },
                 );
             });
 
@@ -140,71 +130,7 @@ exports.postOrder = (req, res, next) => {
             return order.save();
         })
         .then((result) => {
-            const mailOptions = {
-                from: "nhoangkiet35@gmail.com",
-                to: result.user.email,
-                subject: "Sending Email using Node.js",
-                html: `<html>
-                <head>
-                    <style>
-                        table, td, th {
-                            border: 1px solid #ddd;
-                            text-align: left;
-                        }
-                        table {
-                            border-collapse: collapse;
-                            width: 100%;
-                        }
-                        th, td {
-                            padding: 15px;
-                        }
-                        img {
-                            max-width: 7rem;
-                        }
-                    </style>
-                </head>
-                        <body >
-                            <h1>Xin Chào ${result.user.name}</h1>
-                            <div>Phone: ${result.user.phone}</div>
-                            <div>Address: ${result.user.address}</div>
-                            <table>
-                                <tr>
-                                    <th>Tên Sản Phẩm</th>
-                                    <th>Hình Ảnh</th>
-                                    <th>Giá</th>
-                                    <th>Số Lượng</th>
-                                    <th>Thành Tiền</th>
-                                </tr>
-                                ${result.products.map(
-                                    (item) =>
-                                        `<tr>
-                                        <td>${item.product.name}</td>
-                                        <td class='img'>${
-                                            item.product.img1
-                                        }</td>
-                                        <td>${item.product.price} VND</td>
-                                        <td>${item.quantity}</td>
-                                        <td>${
-                                            item.product.price * item.quantity
-                                        } VND</td>
-                                    </tr>`
-                                )}
-                            </table>
-                            <h1>Tổng Thanh Toán: <br/>${result.totalAmount}</h1>
-                            <h1>Cảm ơn bạn!</h1>
-                        </body>
-                    </html >`,
-            };
-            transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log("Email sent: " + info.response);
-                }
-            });
-            return req.user.clearCart();
-        })
-        .then((result) => {
+            req.user.clearCart();
             res.status(201).json({ message: "Success Order Added!" });
         })
         .catch((err) => {

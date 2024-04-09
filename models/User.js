@@ -25,7 +25,7 @@ const userSchema = new Schema(
     },
     {
         timestamps: true,
-    }
+    },
 );
 
 /*
@@ -76,7 +76,7 @@ userSchema.methods.addToCart = function (product, quantity) {
 userSchema.methods.removeFromCart = function (productId, price) {
     let updatedTotalAmount;
     const existingCartItemIndex = this.cart.items.findIndex(
-        (item) => item.productId.toString() === productId.toString()
+        (item) => item.productId.toString() === productId.toString(),
     );
 
     const existingCartItem = this.cart.items[existingCartItemIndex];

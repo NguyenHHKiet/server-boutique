@@ -5,8 +5,8 @@ const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
 
-router.get("/products", shopController.getProducts);
-router.get("/products/:productId", shopController.getProduct);
+router.get("/", shopController.getProducts);
+router.get("/:productId", shopController.getProduct);
 router.get("/cart", isAuth, shopController.getCart);
 router.post("/cart", isAuth, shopController.postCart);
 router.post("/delete-cart-item", isAuth, shopController.deleteCartItem);
@@ -21,7 +21,7 @@ router.post(
             .trim(),
         body("address", "Address has to be valid.").isLength({ min: 8 }).trim(),
     ],
-    shopController.postOrder
+    shopController.postOrder,
 );
 router.get("/orders", isAuth, shopController.getOrders);
 router.get("/orders/:orderId", isAuth, shopController.getInvoice);

@@ -1,5 +1,10 @@
 const fs = require("fs");
 const mongoose = require("mongoose");
+const colors = require("colors");
+const dotenv = require("dotenv");
+
+// Load env vars
+dotenv.config();
 
 // Load models
 const Product = require("./models/Product");

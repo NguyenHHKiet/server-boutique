@@ -18,7 +18,7 @@ const productSchema = new Schema(
     },
     {
         timestamps: true,
-    }
+    },
 );
 
 // Thêm trường count vào lược đồ Product
