@@ -38,6 +38,7 @@ const deleteData = async () => {
     }
 };
 
+console.log(colors.trap.bgBrightCyan("File is running..."));
 if (process.argv[2] === "-i") {
     importData();
 } else if (process.argv[2] === "-d") {
