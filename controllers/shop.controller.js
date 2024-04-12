@@ -33,10 +33,7 @@ exports.getCart = (req, res, next) => {
             const products = user.cart;
             res.status(200).json(products);
         })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
+        .catch(next);
 };
 
 exports.postCart = (req, res, next) => {
@@ -47,18 +44,11 @@ exports.postCart = (req, res, next) => {
         .then((product) => {
             return req.user.addToCart(product, quantity);
         })
-        .then((result) => {
-            console.log("Add to Cart Success!!");
-            res.status(201).json({ message: "Add to Cart Success!!" });
-        })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
+        .catch(next);
 };
 
 exports.deleteCartItem = (req, res, next) => {
-    const prodId = req.body.productId;
+    const prodId = req.params.productId;
     const price = req.body.price;
 
     req.user
@@ -66,10 +56,7 @@ exports.deleteCartItem = (req, res, next) => {
         .then(() => {
             res.status(200).json({ message: "Delete item cart successfully" });
         })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
+        .catch(next);
 };
 
 exports.getOrders = (req, res, next) => {
@@ -80,10 +67,7 @@ exports.getOrders = (req, res, next) => {
         .then((orders) => {
             res.status(200).json(orders);
         })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
+        .catch(next);
 };
 
 exports.postOrder = (req, res, next) => {
@@ -91,11 +75,11 @@ exports.postOrder = (req, res, next) => {
     const phone = req.body.phone;
     const address = req.body.address;
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
-        const error = new Error("Validation failed.");
-        error.statusCode = 422;
+        const error = new Error("Validation failed.", 422);
         error.data = errors.array();
-        throw error;
+        next(error);
     }
 
     req.user
@@ -129,14 +113,7 @@ exports.postOrder = (req, res, next) => {
             });
             return order.save();
         })
-        .then((result) => {
-            req.user.clearCart();
-            res.status(201).json({ message: "Success Order Added!" });
-        })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
+        .catch((err) => next(err));
 };
 
 exports.getInvoice = (req, res, next) => {
@@ -151,8 +128,5 @@ exports.getInvoice = (req, res, next) => {
             }
             res.status(200).json(order);
         })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
+        .catch((err) => next(err));
 };

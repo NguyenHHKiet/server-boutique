@@ -28,6 +28,12 @@ root: `/api/v2/`
 | admin         |            |      |        |        |
 | message       | `/`,`/:id` | `/`  | `/:id` | `/:id` |
 
+<ul>
+    <li>Filter Values: housing=true&averageCost[lte]=100</li>
+    <li>Query Properties: select=name&sort=-name</li>
+    <li>Limit Items: page=2&limit=10</li>
+</ul>
+
 ### Description
 
 Project Overview:

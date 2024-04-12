@@ -2,13 +2,14 @@ const Product = require("../models/Product");
 const Order = require("../models/Order");
 const User = require("../models/User");
 const asyncHandler = require("../middleware/asyncHandler");
+const ErrorResponse = require("../utils/errorResponse");
 
-exports.getProducts = asyncHandler(async (req, res, next) => {
+exports.getProducts = asyncHandler(async (req, res) => {
     const results = await Product.find({ userId: req.userId });
     res.status(200).json({ success: true, data: results });
 });
 
-exports.getProduct = asyncHandler(async (req, res, next) => {
+exports.getProduct = asyncHandler(async (req, res) => {
     const results = await Product.findById(req.params.productId);
     res.status(200).json({ success: true, data: results });
 });
@@ -47,9 +48,7 @@ exports.updateProduct = async (req, res, next) => {
         not yet implemented update images
     */
     if (!productExists) {
-        const error = new Error("Product is not exists");
-        if (!error.statusCode) error.statusCode = 400;
-        next(error);
+        return next(new ErrorResponse("Product is not exists", 400));
     }
 
     // updatedHotel
@@ -61,7 +60,7 @@ exports.deleteProduct = async (req, res, next) => {
     const productId = req.params.productId;
     Product.findByIdAndRemove(productId)
         .then(() => res.status(202).json({ success: true, data: {} }))
-        .catch((err) => console.log(err));
+        .catch(next);
 };
 
 exports.getOrders = async (req, res, next) => {
@@ -79,8 +78,5 @@ exports.getOrders = async (req, res, next) => {
             );
             res.status(200).json({ orders, qtyUser, qtyOrders, earnings });
         })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
+        .catch(next);
 };

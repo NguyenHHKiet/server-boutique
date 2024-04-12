@@ -21,12 +21,14 @@ const authRoutes = require("./routes/auth.routes");
 const adminRoutes = require("./routes/admin.routes");
 const messageRoutes = require("./routes/message.routes");
 const User = require("./models/User");
+const ErrorResponse = require("./utils/errorResponse");
+const csrfSecret = require("./middleware/csrfSecret");
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
-const csrfProtection = csrf();
+const csrfProtection = csrf({ cookie: true });
 
 // MongoDB Configuration
 const store = new MongooseDBStore({
@@ -82,6 +84,7 @@ app.use((req, res, next) => {
     } else {
         req.session.views = 1;
     }
+
     req.session.chat = [];
 
     if (!req.session.user) {
@@ -102,6 +105,8 @@ app.use((req, res, next) => {
         });
 });
 
+app.get("/csrfSecret", csrfSecret);
+
 app.use("/api/v2/products", shopRoutes);
 app.use("/api/v2/auth", authRoutes);
 app.use("/api/v2/admin", adminRoutes);
@@ -111,7 +116,7 @@ app.use("/api/v2/message", messageRoutes);
 app.use((req, res, next) => {
     // Error goes via `next()` method
     setImmediate(() => {
-        next(new Error("Something went wrong"));
+        next(new ErrorResponse("Something went wrong"));
     });
 });
 app.use(errorHandler);

@@ -11,9 +11,6 @@
         "lint:fix": "eslint --fix ./*.js"
     },
     "dependencies": {
-        "@getbrevo/brevo": "^1.0.1",
-        "@mailchimp/mailchimp_marketing": "^3.0.80",
-        "@mailchimp/mailchimp_transactional": "^1.0.50",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.20.2",
         "colors": "^1.4.0",
@@ -27,18 +24,13 @@
         "express-validator": "^7.0.1",
         "helmet": "^7.0.0",
         "jsonwebtoken": "^9.0.1",
-        "mailchimp-api-v3": "^1.15.0",
-        "mailchimp_transactional": "^0.0.1-security",
         "mongoose": "^7.4.3",
         "mongoose-role": "^3.0.5",
         "morgan": "^1.10.0",
         "multer": "^1.4.5-lts.1",
         "nodemailer": "^6.9.4",
-        "nodemailer-mandrill-transport": "^1.2.0",
-        "nodemailer-sendgrid-transport": "^0.2.0",
         "pdfkit": "^0.13.0",
         "request": "^2.88.2",
-        "sib-api-v3-sdk": "^8.5.0",
         "socket.io": "^4.7.2",
         "uuid": "3.4.0"
     },

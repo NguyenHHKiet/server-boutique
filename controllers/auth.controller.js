@@ -2,22 +2,15 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
-
-exports.getCSRFToken = (req, res, next) => {
-    res.status(200).send({
-        isAuthenticated: req.session.isLoggedIn || false,
-        csrfToken: req.csrfToken(),
-    });
-};
+const ErrorResponse = require("../utils/errorResponse");
+const asyncHandler = require("../middleware/asyncHandler");
 
 exports.postSignUp = (req, res, next) => {
     const { email, password, name, phone } = req.body;
-    console.log({ email, password, name, phone });
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        const error = new Error("Validation failed.");
-        error.statusCode = 422;
+        const error = new ErrorResponse("Validation failed.", 422);
         error.data = errors.array();
         throw error;
     }
@@ -34,89 +27,64 @@ exports.postSignUp = (req, res, next) => {
             });
             return user.save();
         })
-        .then((result) => {
-            // OK The request succeeded.
-            return res.status(201).json({
-                message: "The register user succeeded.",
-                userId: result._id,
-            });
-        })
-        .catch((err) => {
-            if (!err.statusCode) err.statusCode = 500;
-            next(err);
-        });
+        .catch(next);
 };
 
-exports.postLogin = async (req, res, next) => {
-    try {
-        const email = req.body.email;
-        const password = req.body.password;
-        console.log(email, password);
+exports.postLogin = asyncHandler(async (req, res, next) => {
+    const email = req.body.email;
+    const password = req.body.password;
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            const error = new Error("Validation failed.");
-            error.statusCode = 422;
-            error.data = errors.array();
-            throw error;
-        }
-
-        const isAdmin = req.get("isAdmin");
-
-        const user = await User.findOne({ email: email });
-        // const user = false;
-        if (isAdmin) {
-            if (!user.hasAccess("admin") && !user.hasAccess("counselors")) {
-                const error = new Error("Non-Authoritative Information");
-                error.statusCode = 401;
-                next(error);
-            }
-        }
-
-        if (!user) {
-            const error = new Error(
-                "A user with this email could not be found."
-            );
-            error.statusCode = 401;
-            throw error;
-        }
-
-        const doMatch = await bcrypt.compare(password, user.password);
-        if (doMatch) {
-            req.session["isLoggedIn"] = true;
-            req.session["user"] = user;
-            req.session.save();
-            const token = jwt.sign(
-                {
-                    email: user.email,
-                    userId: user._id.toString(),
-                },
-                "somesupersecretsecret",
-                { expiresIn: "2h" }
-            );
-            // OK The request succeeded.
-            res.status(200).json({
-                token: token,
-                userId: user._id.toString(),
-                name: user.name,
-                email: user.email,
-                message: "The login user succeeded",
-            });
-        } else {
-            const error = new Error("Wrong password!");
-            error.statusCode = 401;
-            throw error;
-        }
-    } catch (err) {
-        if (!err.statusCode) err.statusCode = 500;
-        next(err);
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const error = new ErrorResponse("Validation failed.", 422);
+        error.data = errors.array();
+        next(error);
     }
-};
+
+    const isAdmin = req.get("isAdmin");
+
+    const user = await User.findOne({ email: email });
+    // const user = false;
+    if (isAdmin) {
+        if (!user.hasAccess("admin") && !user.hasAccess("counselors")) {
+            return next(
+                new ErrorResponse("Non-Authoritative Information", 401),
+            );
+        }
+    }
+
+    if (!user) {
+        return next(
+            new ErrorResponse(
+                "A user with this email could not be found.",
+                401,
+            ),
+        );
+    }
+
+    const doMatch = await bcrypt.compare(password, user.password);
+    if (doMatch) {
+        req.session["isLoggedIn"] = true;
+        req.session["user"] = user;
+        req.session.save();
+        const token = jwt.sign(
+            {
+                email: user.email,
+                userId: user._id.toString(),
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "2h" },
+        );
+        // OK The request succeeded.
+        res.status(200).json({
+            token: token,
+            data: user,
+        });
+    } else {
+        return next(new ErrorResponse("Wrong password!", 401));
+    }
+});
 
 exports.postLogout = (req, res, next) => {
-    return req.session.destroy((err) => {
-        console.log(err);
-        // 203 Non-Authoritative Information
-        res.status(203).json({ message: "203 Non-Authoritative Information" });
-    });
+    return req.session.destroy();
 };
