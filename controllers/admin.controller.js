@@ -60,7 +60,7 @@ exports.deleteProduct = async (req, res, next) => {
     const productId = req.params.productId;
     Product.findByIdAndRemove(productId)
         .then(() => res.status(202).json({ success: true, data: {} }))
-        .catch(next);
+        .catch((err) => next(err));
 };
 
 exports.getOrders = async (req, res, next) => {
@@ -78,5 +78,5 @@ exports.getOrders = async (req, res, next) => {
             );
             res.status(200).json({ orders, qtyUser, qtyOrders, earnings });
         })
-        .catch(next);
+        .catch((err) => next(err));
 };

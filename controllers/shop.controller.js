@@ -33,7 +33,7 @@ exports.getCart = (req, res, next) => {
             const products = user.cart;
             res.status(200).json(products);
         })
-        .catch(next);
+        .catch((err) => next(err));
 };
 
 exports.postCart = (req, res, next) => {
@@ -44,7 +44,7 @@ exports.postCart = (req, res, next) => {
         .then((product) => {
             return req.user.addToCart(product, quantity);
         })
-        .catch(next);
+        .catch((err) => next(err));
 };
 
 exports.deleteCartItem = (req, res, next) => {
@@ -56,7 +56,7 @@ exports.deleteCartItem = (req, res, next) => {
         .then(() => {
             res.status(200).json({ message: "Delete item cart successfully" });
         })
-        .catch(next);
+        .catch((err) => next(err));
 };
 
 exports.getOrders = (req, res, next) => {
@@ -67,7 +67,7 @@ exports.getOrders = (req, res, next) => {
         .then((orders) => {
             res.status(200).json(orders);
         })
-        .catch(next);
+        .catch((err) => next(err));
 };
 
 exports.postOrder = (req, res, next) => {

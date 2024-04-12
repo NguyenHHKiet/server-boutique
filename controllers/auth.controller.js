@@ -27,7 +27,7 @@ exports.postSignUp = (req, res, next) => {
             });
             return user.save();
         })
-        .catch(next);
+        .catch((err) => next(err));
 };
 
 exports.postLogin = asyncHandler(async (req, res, next) => {

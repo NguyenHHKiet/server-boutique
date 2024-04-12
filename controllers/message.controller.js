@@ -33,5 +33,5 @@ exports.postMessage = (req, res, next) => {
                 text: result,
             });
         })
-        .catch(next);
+        .catch((err) => next(err));
 };
